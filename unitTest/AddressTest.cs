@@ -1,6 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using assignment3; // Add this using directive to reference the Address class
+using assignment3;
 
 namespace unitTest
 {
@@ -8,24 +8,84 @@ namespace unitTest
     public class AddressTest
     {
         [TestMethod]
-        public void TestAddressConstructor()
+        public void TestAddressConstructor_ValidInputs()
         {
-            // arrange 
-            string unitNumber = "1a";
-            int streetNumber = 777;
-            string streetName = "56th avenue";
-            string postalCode = "v7n2m8";
-            string city = "Surrey";
+            // Arrange
+            string unitNumber = "1A";
+            int streetNumber = 123;
+            string streetName = "Main Street";
+            string postalCode = "12345";
+            string city = "Vancouver";
 
-            // act 
-            Address address = new Address("1a", 777, "56th avenue", "v7n2m8", "Surrey");
+            // Act
+            var address = new Address(unitNumber, streetNumber, streetName, postalCode, city);
 
-            // assert
-            Assert.AreEqual("1a", address.UnitNumber);
-            Assert.AreEqual(777, address.StreetNumber);
-            Assert.AreEqual("56th avenue", address.StreetName);
-            Assert.AreEqual("v7n2m8", address.PostalCode);
-            Assert.AreEqual("Surrey", address.City);
+            // Assert
+            Assert.AreEqual("unit #1A at 123 Main Street 12345 in Vancouver", address.ToString());
+        }
+
+        [TestMethod]
+        public void TestAddressConstructor_InvalidUnitNumber_ThrowsException()
+        {
+            // Arrange
+            string unitNumber = "12345"; // Invalid length (>4)
+            int streetNumber = 123;
+            string streetName = "Main Street";
+            string postalCode = "12345";
+            string city = "Vancouver";
+
+            // Act & Assert
+            Assert.ThrowsException<ArgumentException>(() =>
+                new Address(unitNumber, streetNumber, streetName, postalCode, city));
+        }
+
+        [TestMethod]
+        public void TestAddressConstructor_InvalidStreetNumber_ThrowsException()
+        {
+            // Arrange
+            string unitNumber = "1A";
+            int streetNumber = 100000; // Invalid (too large)
+            string streetName = "Main Street";
+            string postalCode = "12345";
+            string city = "Vancouver";
+
+            // Act & Assert
+            Assert.ThrowsException<ArgumentException>(() =>
+                new Address(unitNumber, streetNumber, streetName, postalCode, city));
+        }
+
+        [TestMethod]
+        public void TestAddressConstructor_InvalidPostalCode_ThrowsException()
+        {
+            // Arrange
+            string unitNumber = "1A";
+            int streetNumber = 123;
+            string streetName = "Main Street";
+            string invalidPostalCode1 = "1234";    // Invalid length (4)
+            string invalidPostalCode2 = "1234567"; // Invalid length (7)
+            string city = "Vancouver";
+
+            // Act & Assert
+            Assert.ThrowsException<ArgumentException>(() =>
+                new Address(unitNumber, streetNumber, streetName, invalidPostalCode1, city));
+
+            Assert.ThrowsException<ArgumentException>(() =>
+                new Address(unitNumber, streetNumber, streetName, invalidPostalCode2, city));
+        }
+
+        [TestMethod]
+        public void TestAddressConstructor_InvalidCity_ThrowsException()
+        {
+            // Arrange
+            string unitNumber = "1A";
+            int streetNumber = 123;
+            string streetName = "Main Street";
+            string postalCode = "12345";
+            string invalidCity = ""; // Invalid (empty)
+
+            // Act & Assert
+            Assert.ThrowsException<ArgumentException>(() =>
+                new Address(unitNumber, streetNumber, streetName, postalCode, invalidCity));
         }
     }
 }
